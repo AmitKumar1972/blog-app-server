@@ -1,4 +1,0 @@
-{"level":"info","message":"Server running on port 3000","service":"user-service","timestamp":"2024-06-02 11:53:43"}
-{"level":"info","message":"Connected to MongoDB","service":"user-service","timestamp":"2024-06-02 11:53:44"}
-{"level":"info","message":"Connected to MongoDB","service":"user-service","timestamp":"2024-06-02 11:53:44"}
-{"level":"warn","message":"Disconnected from MongoDB","service":"user-service","timestamp":"2024-06-02 11:59:50"}
