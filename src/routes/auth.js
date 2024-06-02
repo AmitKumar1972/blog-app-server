@@ -5,6 +5,7 @@ const User = require('../models/User');
 const validate = require('../middleware/validate');
 const { registerSchema, loginSchema } = require('../validators/user');
 const logger = require('../config/logger');
+const verifyToken = require('../middleware/verifyToken');
 const router = express.Router();
 
 // Register route
@@ -48,7 +49,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Invalid Password' });
     }
 
     const payload = { user: { id: user.id } };
@@ -64,7 +65,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 });
 
 // Get user route
-router.get('/', async (req, res) => {
+router.get('/user', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
