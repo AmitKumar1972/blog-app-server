@@ -3,6 +3,7 @@ const verifyToken = require('../middleware/verifyToken');
 const validate = require('../middleware/validate');
 const { createBlogSchema } = require('../validators/blog');
 const Blog = require('../models/Blog');
+const logger = require('../config/logger');
 const router = express.Router();
 
 // Create a blog
@@ -19,7 +20,7 @@ router.post('/', verifyToken, validate(createBlogSchema), async (req, res) => {
     const blog = await newBlog.save();
     res.json(blog);
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     res.status(500).send('Server error');
   }
 });
@@ -30,7 +31,7 @@ router.get('/', async (req, res) => {
     const blogs = await Blog.find().populate('author', ['name', 'profilePicture']);
     res.json(blogs);
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     res.status(500).send('Server error');
   }
 });
@@ -44,7 +45,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(blog);
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Blog not found' });
     }
@@ -53,7 +54,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Edit a blog
-router.put('/:id', auth, validate(createBlogSchema), async (req, res) => {
+router.put('/:id', verifyToken, validate(createBlogSchema), async (req, res) => {
   const { title, body } = req.body;
 
   try {
@@ -73,7 +74,7 @@ router.put('/:id', auth, validate(createBlogSchema), async (req, res) => {
     await blog.save();
     res.json(blog);
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Blog not found' });
     }
@@ -82,7 +83,7 @@ router.put('/:id', auth, validate(createBlogSchema), async (req, res) => {
 });
 
 // Delete a blog
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
@@ -97,7 +98,7 @@ router.delete('/:id', auth, async (req, res) => {
     await blog.remove();
     res.json({ msg: 'Blog removed' });
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Blog not found' });
     }

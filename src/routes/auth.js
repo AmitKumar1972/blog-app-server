@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const validate = require('../middleware/validate');
 const { registerSchema, loginSchema } = require('../validators/user');
+const logger = require('../config/logger');
 const router = express.Router();
 
 // Register route
 router.post('/register', validate(registerSchema), async (req, res) => {
-  console.log('yahaaan aagyaaa');
   const { name, email, password } = req.body;
 
   try {
@@ -31,7 +31,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
       res.json({ token });
     });
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     res.status(500).send('Server error');
   }
 });
@@ -58,7 +58,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       res.json({ token });
     });
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     res.status(500).send('Server error');
   }
 });
@@ -69,7 +69,7 @@ router.get('/', async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
     res.status(500).send('Server error');
   }
 });
